@@ -2,11 +2,12 @@
 //Exercise: Build a "Snack Ranking App" Component in this file
 //Import components here
 
+import App from './App.jsx';
+
 export default function StudentWork() {
   return (
     <div>
-      {/* add JSX here */}
-      <p> Student output will go here</p>
+      <App />
     </div>
   );
 }
