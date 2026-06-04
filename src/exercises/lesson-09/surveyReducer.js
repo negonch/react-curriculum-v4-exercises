@@ -95,15 +95,93 @@ export function surveyReducer(state, action) {
     // ===== STUDENT IMPLEMENTATION TASKS =====
 
     case 'UPDATE_QUESTION_TEXT':
-      // TODO: Implement this action
-      console.log('TODO: Implement UPDATE_QUESTION_TEXT action');
-      return state;
+      return {
+        ...state,
+        questions: state.questions.map((q) =>
+          q.id === action.payload.id
+            ? { ...q, question: action.payload.newText }
+            : q
+        ),
+        survey: {
+          ...state.survey,
+          lastModified: new Date().toISOString().split('T')[0],
+        },
+      };
 
     case 'DELETE_QUESTION':
-      // TODO: Implement this action
-      console.log('TODO: Implement DELETE_QUESTION action');
-      return state;
+      return {
+        ...state,
+        questions: state.questions.filter((q) => q.id !== action.payload.id),
+        survey: {
+          ...state.survey,
+          lastModified: new Date().toISOString().split('T')[0],
+        },
+        ui: {
+          ...state.ui,
+          editingQuestionId:
+            state.ui.editingQuestionId === action.payload.id
+              ? null
+              : state.ui.editingQuestionId,
+        },
+      };
 
+    case 'ADD_OPTION_TO_QUESTION':
+      return {
+        ...state,
+        questions: state.questions.map((q) =>
+          q.id === action.payload.questionId &&
+          q.type === QUESTION_TYPES.MULTIPLE_CHOICE
+            ? { ...q, options: [...q.options, action.payload.optionText] }
+            : q
+        ),
+        survey: {
+          ...state.survey,
+          lastModified: new Date().toISOString().split('T')[0],
+        },
+      };
+
+    case 'UPDATE_OPTION_TEXT':
+      return {
+        ...state,
+        questions: state.questions.map((q) =>
+          q.id === action.payload.questionId
+            ? {
+                ...q,
+                options: q.options.map((option, index) =>
+                  index === action.payload.optionIndex
+                    ? action.payload.newText
+                    : option
+                ),
+              }
+            : q
+        ),
+        survey: {
+          ...state.survey,
+          lastModified: new Date().toISOString().split('T')[0],
+        },
+      };
+
+    case 'DELETE_OPTION_FROM_QUESTION':
+      return {
+        ...state,
+        questions: state.questions.map((q) =>
+          q.id === action.payload.questionId
+            ? {
+                ...q,
+                options:
+                  q.options.length > 2
+                    ? q.options.filter(
+                        (_, index) => index !== action.payload.optionIndex
+                      )
+                    : q.options,
+              }
+            : q
+        ),
+        survey: {
+          ...state.survey,
+          lastModified: new Date().toISOString().split('T')[0],
+        },
+      };
     default:
       return state;
   }
